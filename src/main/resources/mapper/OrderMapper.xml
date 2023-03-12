@@ -1,0 +1,91 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.OrderMapper">
+    <insert id="insertOrder">
+        insert into homestay_order(user_id,order_status,home_id,order_user_name,order_user_phone,order_user_card,order_create_date,order_number)
+                values (#{orderEntity.userId},'dzf',#{orderEntity.homeId},#{orderEntity.orderUserName},#{orderEntity.orderUserPhone},
+                        #{orderEntity.orderUserCard},NOW(),#{orderEntity.orderNumber})
+    </insert>
+    <update id="cancel">
+        update homestay_order set order_status = #{orderStatus} where order_id = #{orderId} and order_deleted = 0
+    </update>
+    <update id="del">
+        update homestay_order set order_deleted = 1 where order_id = #{orderId}
+    </update>
+    <update id="updateStatusByOrderNomber">
+        update homestay_order set order_status = 'drz' where order_number = #{orderNumber}
+    </update>
+    <select id="selectPage" resultType="com.example.homeaccommodationtravel.vo.OrderListVo">
+        select ho.order_id as orderId,
+               ho.order_status as orderStatus,
+               ho.order_number as orderNumber,
+               ho.home_id as homeId,
+               (select home_name from homestay_home hh where hh.home_id = ho.home_id) as homeName,
+               (select home_money from homestay_home hh where hh.home_id = ho.home_id) as homeMoney,
+               ho.order_user_name as orderUserName,
+               ho.order_user_phone as orderUserPhone,
+               ho.order_user_card as orderUserCard,
+               ho.order_create_date as orderCreateDate
+        from homestay_order ho
+        where ho.order_deleted = 0
+            <if test="search != null and search != ''">
+                and (ho.order_status like concat('%',#{search},'%')
+                    or (select home_name from homestay_home hh where hh.home_id = ho.home_id) like concat('%',#{search},'%')
+                    or (select home_money from homestay_home hh where hh.home_id = ho.home_id) like concat('%',#{search},'%')
+                    or ho.order_user_name like concat('%',#{search},'%')
+                    or ho.order_user_phone like concat('%',#{search},'%')
+                    or ho.order_user_card like concat('%',#{search},'%')
+                    or ho.order_create_date like concat('%',#{search},'%'))
+            </if>
+        order by ho.order_create_date desc
+    </select>
+    <select id="unsubscribePage" resultType="com.example.homeaccommodationtravel.vo.OrderListVo">
+        select  ho.order_id as orderId,
+                ho.order_status as orderStatus,
+                ho.order_number as orderNumber,
+                ho.home_id as homeId,
+                (select home_name from homestay_home hh where hh.home_id = ho.home_id) as homeName,
+                (select home_money from homestay_home hh where hh.home_id = ho.home_id) as homeMoney,
+                ho.order_user_name as orderUserName,
+                ho.order_user_phone as orderUserPhone,
+                ho.order_user_card as orderUserCard,
+                ho.order_create_date as orderCreateDate
+        from homestay_order ho
+        where ho.order_deleted = 0
+            and (order_status = 'dtd' or order_status = 'ytd' or order_status = 'ybh')
+        <if test="search != null and search != ''">
+            and (ho.order_status like concat('%',#{search},'%')
+            or (select home_name from homestay_home hh where hh.home_id = ho.home_id) like concat('%',#{search},'%')
+            or (select home_money from homestay_home hh where hh.home_id = ho.home_id) like concat('%',#{search},'%')
+            or ho.order_user_name like concat('%',#{search},'%')
+            or ho.order_user_phone like concat('%',#{search},'%')
+            or ho.order_user_card like concat('%',#{search},'%')
+            or hDATE_FORMAT(ho.order_create_date,'%Y-%m-%d %H:%i:%S') like concat('%',#{search},'%'))
+        </if>
+        order by ho.order_create_date desc
+    </select>
+    <select id="selUserPage" resultType="com.example.homeaccommodationtravel.vo.OrderListVo">
+        select  ho.order_id as orderId,
+        ho.order_status as orderStatus,
+        ho.order_number as orderNumber,
+        ho.home_id as homeId,
+        hh.home_name as homeName,
+        hh.home_money as homeMoney,
+        ho.order_user_name as orderUserName,
+        ho.order_user_phone as orderUserPhone,
+        ho.order_user_card as orderUserCard,
+        DATE_FORMAT(ho.order_create_date,'%Y-%m-%d %H:%i:%S') as orderCreateDate
+        from homestay_order ho left join homestay_home hh on hh.home_id = ho.home_id
+        where ho.user_id = #{userId}
+        <if test="search != null and search != ''">
+            and (ho.order_status like concat('%',#{search},'%')
+            or hh.home_name like concat('%',#{search},'%')
+            or hh.home_money like concat('%',#{search},'%')
+            or ho.order_user_name like concat('%',#{search},'%')
+            or ho.order_user_phone like concat('%',#{search},'%')
+            or ho.order_user_card like concat('%',#{search},'%')
+            or DATE_FORMAT(ho.order_create_date,'%Y-%m-%d %H:%i:%S') like concat('%',#{search},'%'))
+        </if>
+        order by ho.order_create_date desc
+    </select>
+</mapper>

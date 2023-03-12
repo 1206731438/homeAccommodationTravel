@@ -1,0 +1,34 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/homestay?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  main:
+    allow-circular-references: true
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*
+
+# ????
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
+#沙箱支付配置
+alipay:
+  appId: 2021000121699717
+  appPrivateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDHaFEOR4eiDl9tA3Apo0VzbxydaL3E7i+C+eK3FViKkdQ69EK6/tcmoSuXhb5kuCJISZebxNd8U2gM5qiS0ojCdI4mHdpJ1JAFyq9dRf9vEnBvOZW5nVhRJcGkjvrbIy/2wt/AO5l7NjmTU46IM5nFEYOpEVIv1mNotdre+nJjeg+Q5US7XwiwHqoRAY+a7gTu8hYKhdVvT5GITftUVCn0dv0JUET+myZMkVpCcojIdoIsiagsPoAroE+YdxlOO5y9ScY2dz1jY1tv9B7dm9bWkCHKjcdmXv7vpV8nNLM9QaSb2XAoXwBe77CQrbV85IJ4OGSdN2WsHaDadsgNbJMZAgMBAAECggEALwcLFrMH6dA58Ru+eBNpba/mr7jkCG2kBt+n+EWwe/2ob77rfe5cD2AzR6jjHh3O9/1jI/loWInTIDfFydqdJj8WxyaDNKZM0RDcCsNXWnqeyZxrEztoeLrO0GBoCQZjaW7MFin4KHbBXV13X+fLfA6FXnoXR/DnwOoilDO8hnj4VwKg+HPvbe0p+0RAov5TMtZTObvtNg6aCEK06vJUE+3X/qE9zMgJ+67zF6ISe/e9VnQShbKEO/dgaqKD9SfachiKe2IwcYlV4ygp0KG6lE9tky4rzwjqcRuhgTpju9L3t+iSnnDiAXoiXdfywC/Sv3i2W4cMdJ7oW/I4Cw9AAQKBgQDoDH3Pl+d0IZg7BMHCZv1oIxDRlRs6CKksavuzOiGXTm0ZQYenSz0JuQwAdncPVfuLNFeFfBGaDb1sgHe5pri4kpD4VIpwd/kEBuSpI3Vpo2PxjbzveGAsxUvG92UcQCtylhZDGOTmJatCn5wSpn9GC3j2keCqbtiE79l6sePUQQKBgQDb/VUKJ+QanwMfZ7UBBmAUS/y6YyUPLXojA2eHeoqSi4F6GYTVHt14NUtVcpaaV0ep4aWIBnw8zN2lk/lNPddvqZzFEnoevv8ngGng6SF4fszA49fAIAEMkRLLHusRleL9Xs0ScXkI9X0T+JVWHWAm+HvBc8u711FZe+4Qc0Oo2QKBgFXymn7TksTu1IW3o1Sv9NgndMlL4wPBxXdQQN4Hf/2c7MfX/7i1I2yAf7OELWEexcavomMsqxBWWnzfsHixCeZDUzLHjWdO6IrXSsZi/dAc1p3Xk81W1rh+cyzE4UxvcChG8wPzKoUcGqzYlWRLCwUUpr8dFQvLdqL2e6T4UpyBAoGBAKn2AmKTSUdL/PShghVloItt3bb+7F3ai9dLRQxFn5Py1jjISHkDnKXHvwkoO7TIo+RbIjGCmS+8M64+Mcj8c1qg1y7mxJTGiYkyTBro4uQeSwDnxwN3dngICVYG8CQpAjMwsA2Ev7ctOtJYJsBed7AEIFDorsnUY9RXzCjHdMmZAoGAX0KhE02ramTJMoXxLT9pKa5KytaX8YufH40jiM40StoWATqShn4A/DQ/pItk5JeP95AkOfN5ztAX9zZABAQsNbcLJxjg3T2JP8Tr1sLk3+FrdK0IdbJuSoU/LSFmz0IpiqqOCZBBaCQWBuuHrqaQBJM7MpeoGZtVk9yT/qKlaRU=
+  alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhUf239TWlXRMHIPuL3n74DezW3Fv2XhdjTL8l6p0OWCLjWXEX4BWPXLoHKXodUJm90qu09I3slluywL9yViGQ8uA+1wREPhPKLU/PPYRfYqAjiKi/oXz5QKNZnTG5xYqINM+FJx7H4mpCdPogQw95BbVyr7q3aY0PyZ91WOUU0Sg32rF9+mRl9l2Aq+SlkNQ8IHhBkGIAaxTREkgvky/9eEieq3Ju7XSXAcHEqUbvsmFhwrA/ZJHFwXJgr4tXehHlrFHCqTiLfB+mra+5hbhbJ4jseYYhu0wcC/8BiKOjdGKNv7UCHluW44WdcIQ3y17SiCCPfl0LrfI9L3tJwwy/wIDAQAB
+  notifyUrl: http://s3n7bx.natappfree.cc/alipay/notify
+  returnUrl: http://localhost:8081/#/scheduled
+
+#支付账号：osbmjg4603@sandbox.com
+#支付密码：111111

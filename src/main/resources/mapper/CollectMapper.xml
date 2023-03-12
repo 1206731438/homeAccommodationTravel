@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.CollectMapper">
+    <insert id="insert">
+        insert into homestay_collect(user_id,home_id,collect_date)
+                values (#{userId},#{collectEntity.homeId},NOW())
+    </insert>
+    <update id="del">
+        update homestay_collect set clollect_deleted = 1 where collect_id = #{collectId}
+    </update>
+    <select id="selectPage" resultType="com.example.homeaccommodationtravel.vo.CollectVo">
+        select hc.collect_id as collectId,
+               hc.user_id as userId,
+               hc.home_id as homeId,
+               hc.collect_date as collectDate,
+               hh.type_id as typeId,
+               hh.home_money as homeMoney,
+               hh.home_name as homeName,
+               hh.home_people as homePeople,
+               hh.home_network as homeNetwork,
+               hh.home_room as homeRoom,
+               hh.home_diet as homeDiet,
+               hh. home_clean as homeClean,
+               hh.home_imgs as homeImgs,
+               (select type_name from homestay_type ht where ht.type_id = hh.type_id) as typeName
+        from homestay_collect hc left join homestay_home hh on hc.home_id = hh.home_id
+        where hh.home_delectd = 0
+            and hc.clollect_deleted = 0
+            and user_id = #{userId}
+        <if test="search != null and search != ''">
+            and (hh.home_name like concat('%',#{search},'%')
+                or DATE_FORMAT(hc.collect_date,'%Y-%m-%d %H:%i:%S') like concat('%',#{search},'%')
+                or hh.home_money like concat('%',#{search},'%'))
+        </if>
+        order by hc.collect_date desc
+    </select>
+    <select id="selByUserIdAndHomeId" resultType="java.lang.Integer">
+        select collect_id from homestay_collect where home_id = #{homeId} and user_id = #{userId} and clollect_deleted = 0
+    </select>
+</mapper>

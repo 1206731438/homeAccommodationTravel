@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.AdminMapper">
+    <insert id="insert">
+        insert into homestay_admin(admin_name,admin_age,admin_sex,admin_type,admin_img,
+                                   admin_create_date,admin_create_id,admin_update_date,admin_update_id,
+                                   admin_password,admin_phone,admin_salt)
+                    values (#{adminEntity.adminName},#{adminEntity.adminAge},#{adminEntity.adminSex},#{adminEntity.adminType},
+                            #{adminEntity.adminImg},NOW(),#{adminId},NOW(),#{adminId},#{adminEntity.adminPassword},#{adminEntity.adminPhone},
+                            #{adminEntity.adminSalt})
+    </insert>
+    <update id="update">
+        update homestay_admin set admin_name = #{adminEntity.adminName},
+                                  admin_age = #{adminEntity.adminAge},
+                                  admin_sex = #{adminEntity.adminSex},
+                                  admin_type = #{adminEntity.adminType},
+                                  admin_img = #{adminEntity.adminImg},
+                                  admin_update_date = NOW(),
+                                  admin_update_id = #{adminId},
+                                  admin_phone = #{adminEntity.adminPhone}
+        where admin_id = #{adminEntity.adminId}
+    </update>
+    <update id="del">
+        update homestay_admin set admin_deleted = 1
+        where admin_id in (<foreach collection="adminIdList" item="adminId" separator="," >#{adminId}</foreach> )
+    </update>
+    <update id="updatePwd">
+        update homestay_admin set admin_salt = #{salt},
+                                  admin_password = #{adminPassword}
+        where admin_id = #{adminId}
+    </update>
+    <select id="getUserByPhone" resultType="com.example.homeaccommodationtravel.entity.AdminEntity">
+        select admin_id as adminId,
+               admin_phone as adminPhone,
+               admin_name as adminName,
+               admin_salt as adminSalt,
+               admin_age as adminAge,
+               admin_sex as adminSex,
+               admin_password as adminPassword,
+               admin_type as adminType,
+               admin_img as adminImg
+        from homestay_admin
+        where admin_phone = #{adminPhone}
+            and admin_deleted = 0
+    </select>
+    <select id="selectPage" resultType="com.example.homeaccommodationtravel.vo.AdminListVo">
+        select ha.admin_id as adminId,
+               ha.admin_name as adminName,
+               ha.admin_age as adminAge,
+               ha.admin_sex as adminSex,
+               ha.admin_type as adminType,
+               ha.admin_phone as adminPhone,
+               if(ha.admin_type = 1,'超级管理员',if(ha.admin_type = 2,'管理员','员工')) as adminTypeName,
+               ha.admin_img as adminImg,
+               ha.admin_create_date as adminCreateDate,
+               ha.admin_create_id as adminCreateId,
+               (select admin_name from homestay_admin ha2 where ha.admin_create_id = ha2.admin_id) as adminCreateName,
+               ha.admin_update_date as adminUpdateDate,
+               ha.admin_update_id as adminUpdateId,
+               (select admin_name from homestay_admin ha2 where ha.admin_update_id = ha2.admin_id) as adminUpdateName
+        from homestay_admin ha
+        where admin_deleted = 0
+        <if test="adminType != null and adminType != '' and adminType == 1">
+            and admin_type != 1
+        </if>
+        <if test="adminType != null and adminType != '' and adminType == 2">
+            and admin_type = 3
+        </if>
+        <if test="search != null and search != ''">
+            and (
+                ha.admin_name like concat('%',#{search},'%')
+                or if(ha.admin_type = 1,'超级管理员',if(ha.admin_type = 2,'管理员','员工')) like concat('%',#{search},'%')
+                or ha.admin_age like concat('%',#{search},'%')
+                or ha.admin_sex like concat('%',#{search},'%')
+                or ha.admin_type like concat('%',#{search},'%')
+                or ha.admin_create_date like concat('%',#{search},'%')
+                or (select admin_name from homestay_admin ha2 where ha.admin_create_id = ha2.admin_id) like concat('%',#{search},'%')
+                or ha.admin_update_date like concat('%',#{search},'%')
+                or (select admin_name from homestay_admin ha2 where ha.admin_update_id = ha2.admin_id) like concat('%',#{search},'%')
+            )
+        </if>
+        order by ha.admin_create_date desc
+    </select>
+    <select id="selUserById" resultType="com.example.homeaccommodationtravel.entity.AdminEntity">
+        select admin_salt as adminSalt,
+               admin_password as adminPassword
+        from homestay_admin
+        where admin_id = #{adminId}
+            and admin_deleted = 0
+    </select>
+</mapper>

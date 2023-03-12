@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.HomeTypeMapper">
+    <insert id="insert">
+        insert into homestay_type(type_name,type_create_date,type_create_id,type_update_date,type_update_id)
+                values (#{homeTypeEntity.typeName},NOW(),#{adminId},NOW(),#{adminId})
+    </insert>
+    <update id="update">
+        update homestay_type set type_name = #{homeTypeEntity.typeName},
+                                 type_update_date = NOW(),
+                                 type_update_id = #{adminId}
+        where type_id = #{homeTypeEntity.typeId}
+    </update>
+    <update id="del">
+        update homestay_type set type_deleted = 1
+        where type_id in (<foreach collection="typeIds" item="typeId" separator=",">
+        #{typeId}
+    </foreach> )
+    </update>
+    <select id="selectPage" resultType="com.example.homeaccommodationtravel.vo.HomeTypeVo">
+        select ht.type_id as typeId,
+               ht.type_name as typeName,
+               ht.type_create_date as typeCreateDate,
+               ht.type_create_id as typeCreateId,
+               (select admin_name from homestay_admin ha where ha.admin_id = ht.type_create_id) as typeCreateName,
+               ht.type_update_date as typeUpdateDate,
+               ht.type_update_id as typeUpdateId,
+               (select admin_name from homestay_admin ha where ha.admin_id = ht.type_update_id) as typeUpdateName
+        from homestay_type ht
+        where type_deleted = 0
+        <if test="search != null and search != ''">
+             and (ht.type_name like concat('%',#{search},'%')
+                or ht.type_create_date like concat('%',#{search},'%')
+                or (select admin_name from homestay_admin ha where ha.admin_id = ht.type_create_id) like concat('%',#{search},'%')
+                or ht.type_update_date like concat('%',#{search},'%')
+                or (select admin_name from homestay_admin ha where ha.admin_id = ht.type_update_id) like concat('%',#{search},'%'))
+        </if>
+        order by ht.type_create_date desc
+    </select>
+    <select id="selByTypeName" resultType="com.example.homeaccommodationtravel.entity.HomeTypeEntity">
+        select type_id as typeId,
+               type_name as typeName
+        from homestay_type
+        where type_name = #{typeName}
+            and type_deleted = 0
+    </select>
+</mapper>

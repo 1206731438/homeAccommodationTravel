@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.CommentMapper">
+    <insert id="insert">
+        insert into homestay_comment(user_id,home_id,comment_content,comment_create_time)
+                values (#{commentEntity.userId},#{commentEntity.homeId},#{commentEntity.commentContent},NOW())
+    </insert>
+    <select id="selComments" resultType="com.example.homeaccommodationtravel.vo.CommentVo">
+        select hc.comment_id as commentId,
+               hc.user_id as userId,
+               hc.comment_content as commentContent,
+               hc.comment_create_time as commentCreateTime,
+               hu.user_nickname as userNickname,
+               hu.user_img as userImg
+        from homestay_comment hc left join homestay_user hu on hc.user_id = hu.user_id
+        where home_id = #{homeId}
+        order by hc.comment_create_time desc
+    </select>
+</mapper>

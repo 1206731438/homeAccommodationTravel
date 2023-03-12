@@ -1,0 +1,40 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.UserMapper">
+    <insert id="register">
+        insert into homestay_user(user_phone,user_nickname,user_password,user_salt,user_sex,user_age,user_img)
+                values (#{userEntity.userPhone},#{userEntity.userNickname},#{userEntity.userPassword},#{userEntity.userSalt},
+                        #{userEntity.userSex},#{userEntity.userAge},#{userEntity.userImg})
+    </insert>
+    <update id="update">
+        update homestay_user set user_phone = #{userEntity.userPhone},
+                                 user_nickname = #{userEntity.userNickname},
+                                 user_sex = #{userEntity.userSex},
+                                 user_age = #{userEntity.userAge},
+                                 user_img = #{userEntity.userImg}
+        where user_id = #{userEntity.userId}
+    </update>
+    <update id="updateUserPwd">
+        update homestay_user set user_salt = #{salt},
+                                 user_password = #{userPassword}
+        where user_id = #{userId}
+    </update>
+    <select id="getUserByPhone" resultType="com.example.homeaccommodationtravel.entity.UserEntity">
+        select user_id as userId,
+               user_phone as userPhone,
+               user_nickname as userNickname,
+               user_password as userPassword,
+               user_salt as userSalt,
+               user_sex as userSex,
+               user_age as userAge,
+               user_img as userImg
+        from homestay_user
+        where user_phone = #{userPhone}
+    </select>
+    <select id="selUserById" resultType="com.example.homeaccommodationtravel.entity.UserEntity">
+        select user_salt as userSalt,
+               user_password as userPassword
+        from homestay_user
+        where user_id = #{userId}
+    </select>
+</mapper>

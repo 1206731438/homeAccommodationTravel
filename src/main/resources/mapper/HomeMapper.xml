@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.homeaccommodationtravel.mapper.HomeMapper">
+    <insert id="insert">
+        insert into homestay_home(type_id,home_money,home_name,home_people,home_network,home_room,home_diet,home_clean,
+                                  home_create_id,home_create_date,home_update_id,home_update_date,home_imgs)
+                values (#{homeInsertPo.typeId},#{homeInsertPo.homeMoney},#{homeInsertPo.homeName},#{homeInsertPo.homePeople},
+                        #{homeInsertPo.homeNetwork},#{homeInsertPo.homeRoom},#{homeInsertPo.homeDiet},#{homeInsertPo.homeClean},
+                        #{adminId},NOW(),#{adminId},NOW(),#{homeInsertPo.homeImgs})
+    </insert>
+    <update id="update">
+        update homestay_home set type_id = #{homeInsertPo.typeId},
+                                 home_money = #{homeInsertPo.homeMoney},
+                                 home_name = #{homeInsertPo.homeName},
+                                 home_people = #{homeInsertPo.homePeople},
+                                 home_network = #{homeInsertPo.homeNetwork},
+                                 home_room = #{homeInsertPo.homeRoom},
+                                 home_diet = #{homeInsertPo.homeDiet},
+                                 home_clean = #{homeInsertPo.homeClean},
+                                 home_update_id = #{adminId},
+                                 home_update_date = NOW(),
+                                 home_imgs = #{homeInsertPo.homeImgs}
+        where home_id = #{homeInsertPo.homeId}
+    </update>
+    <update id="del">
+        update homestay_home set home_delectd = 1
+        where home_id in(<foreach collection="homeIds" item="homeId" separator=",">
+        #{homeId}
+    </foreach> )
+    </update>
+    <select id="selectPage" resultType="com.example.homeaccommodationtravel.vo.HomeListVo">
+        select hh.home_id as homeId,
+               hh.type_id as typeId,
+               (select type_name from homestay_type ht where ht.type_id = hh.type_id and ht.type_deleted = 0) as typeName,
+               hh.home_money as homeMoney,
+               hh.home_name as homeName,
+               hh.home_people as homepeople,
+               hh.home_network as homeNetwork,
+               hh.home_room as homeRoom,
+               hh.home_diet as homeDiet,
+               hh.home_clean as homeClean,
+               hh.home_create_id as homeCreateId,
+               (select admin_name from homestay_admin ha where ha.admin_id = hh.home_create_id) as homeCreateName,
+               hh.home_create_date as homeCreateDate,
+               hh.home_update_id as homeUpdateId,
+               (select admin_name from homestay_admin ha where ha.admin_id = hh.home_update_id) as homeUpdateName,
+               hh.home_update_date as homeUpdateDate,
+               hh.home_imgs as homeImgs
+        from homestay_home hh
+        where home_delectd = 0
+        <if test="typeId != null and typeId != ''">
+            and hh.type_id = #{typeId}
+        </if>
+        <if test="search != null and search != ''">
+            and (select type_name from homestay_type ht where ht.type_id = hh.type_id) like concat('%',#{search},'%')
+                or hh.home_money like concat('%',#{search},'%')
+                or hh.home_name like concat('%',#{search},'%')
+                or hh.home_people like concat('%',#{search},'%')
+                or hh.home_network like concat('%',#{search},'%')
+                or hh.home_room like concat('%',#{search},'%')
+                or hh.home_diet like concat('%',#{search},'%')
+                or hh.home_create_date like concat('%',#{search},'%')
+                or hh.home_clean like concat('%',#{search},'%')
+                or (select admin_name from homestay_admin ha where ha.admin_id = hh.home_create_id) like concat('%',#{search},'%')
+                or (select admin_name from homestay_admin ha where ha.admin_id = hh.home_update_id) like concat('%',#{search},'%')
+        </if>
+        order by hh.home_create_date desc
+    </select>
+    <select id="getTypeNameList" resultType="com.example.homeaccommodationtravel.vo.TypeNameList">
+        select type_id as typeId,
+               type_name as typeName
+        from homestay_type
+        where type_deleted = 0
+        order by type_create_date desc
+    </select>
+    <select id="selUserPage" resultType="com.example.homeaccommodationtravel.vo.HomeListVo">
+        select hh.home_id as homeId,
+        hh.type_id as typeId,
+        (select type_name from homestay_type ht where ht.type_id = hh.type_id and ht.type_deleted = 0) as typeName,
+        hh.home_money as homeMoney,
+        hh.home_name as homeName,
+        hh.home_people as homepeople,
+        hh.home_network as homeNetwork,
+        hh.home_room as homeRoom,
+        hh.home_diet as homeDiet,
+        hh.home_clean as homeClean,
+        hh.home_create_id as homeCreateId,
+        (select admin_name from homestay_admin ha where ha.admin_id = hh.home_create_id) as homeCreateName,
+        hh.home_create_date as homeCreateDate,
+        hh.home_update_id as homeUpdateId,
+        (select admin_name from homestay_admin ha where ha.admin_id = hh.home_update_id) as homeUpdateName,
+        hh.home_update_date as homeUpdateDate,
+        hh.home_imgs as homeImgs
+        from homestay_home hh
+        where home_delectd = 0
+        <if test="typeId != null and typeId != ''">
+            and hh.type_id = #{typeId}
+        </if>
+        <if test="search != null and search != ''">
+            and hh.home_name like concat('%',#{search},'%')
+        </if>
+        order by hh.home_create_date desc
+    </select>
+</mapper>
